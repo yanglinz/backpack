@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -37,13 +38,57 @@ type ComposeConfig struct {
 	Services map[string]interface{} `yaml:"services"`
 }
 
-// GetComposeConfig creates a yaml map of docker-compose.yml
-func GetComposeConfig(context internal.Context) ComposeConfig {
-	composeConfig := ComposeConfig{
-		Version:  "3.6",
-		Services: make(map[string]interface{}),
+func getDependentServices(context internal.Context) map[string]interface{} {
+	services := make(map[string]interface{})
+
+	// Add postgres to services
+	if context.Services.Postgres {
+		service := composeService{
+			Image: "postgres:11.6",
+			Environment: []string{
+				"POSTGRES_DB=postgres",
+				"POSTGRES_PASSWORD=postgres",
+				"POSTGRES_USER=postgres",
+			},
+			Ports:   []string{"5432:5432"},
+			Volumes: []string{"./var/postgres:/var/lib/postgresql/data"},
+		}
+		services["postgres"] = service
 	}
 
+	return services
+}
+
+func getServerServices(context internal.Context) map[string]interface{} {
+	services := make(map[string]interface{})
+	for _, p := range context.Projects {
+		settingsPath := filepath.Join(p.Path, "settings.py")
+		fmt.Println(settingsPath)
+	}
+	return services
+}
+
+// GetComposeConfig creates a yaml map of docker-compose.yml
+func GetComposeConfig(context internal.Context) ComposeConfig {
+	services := make(map[string]interface{})
+
+	// Get dependent services
+	dependentServices := getDependentServices(context)
+	for k, v := range dependentServices {
+		services[k] = v
+	}
+
+	// Get server services
+	serverServices := getServerServices(context)
+	for k, v := range serverServices {
+		services[k] = v
+	}
+
+	// Generate config
+	composeConfig := ComposeConfig{
+		Version:  "3.6",
+		Services: services,
+	}
 	return composeConfig
 }
 
