@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -13,7 +14,11 @@ var debugCmd = &cobra.Command{
 	Long:  "🔧 Output debug info",
 	Run: func(cmd *cobra.Command, args []string) {
 		context := internal.ParseContext(cmd)
-		fmt.Println(context)
+		data, err := json.MarshalIndent(context, "", "  ")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("%s\n", data)
 	},
 }
 
