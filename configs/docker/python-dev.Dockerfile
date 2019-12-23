@@ -3,7 +3,7 @@ FROM python:3.7
 # Install watchman
 # This step takes a LONG time, so cache this layer first
 ARG DISABLE_WATCHMAN
-COPY ./.backback/configs/watchman/install-watchman.sh /tmp/
+COPY .backpack/configs/watchman/install-watchman.sh /tmp/
 RUN /tmp/install-watchman.sh
 
 ENV PYTHONUNBUFFERED 1
