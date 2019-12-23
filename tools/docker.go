@@ -56,15 +56,25 @@ func getDependentServices(context internal.Context) map[string]interface{} {
 		services["postgres"] = service
 	}
 
+	// Add redis to services
+	if context.Services.Redis {
+		service := composeService{
+			Image: "redis:5.0.5",
+		}
+		services["redis"] = service
+	}
+
 	return services
 }
 
 func getServerServices(context internal.Context) map[string]interface{} {
 	services := make(map[string]interface{})
+
 	for _, p := range context.Projects {
 		settingsPath := filepath.Join(p.Path, "settings.py")
 		fmt.Println(settingsPath)
 	}
+
 	return services
 }
 
