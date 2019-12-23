@@ -76,13 +76,14 @@ func getServerService(context internal.Context, project internal.Project) (strin
 		Dockerfile: ".backpack/configs/docker/python-dev.Dockerfile",
 	}
 
-	startCommand := "./backpack/docker/init/dev-django.sh"
+	startCommand := "./.backpack/configs/scripts/dev-django.sh"
 	commands := []string{startCommand}
 	if context.Services.Postgres {
 		commands = []string{
 			".backpack/configs/scripts/wait-for-it.sh -t 60 postgres:5432",
 			".backpack/configs/scripts/wait-for-pg.sh",
 			"sleep 2",
+			startCommand,
 		}
 	}
 
