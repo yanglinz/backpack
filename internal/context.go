@@ -10,16 +10,20 @@ import (
 )
 
 type project struct {
+	Path string
+	Name string
 }
 
 type contextYaml struct {
-	Name string
+	Name     string
+	Projects []project
 }
 
 // Context for the overarching project
 type Context struct {
-	Root string
-	Name string
+	Root     string
+	Name     string
+	Projects []project
 }
 
 func parseRootPath(cmd *cobra.Command) (string, error) {
@@ -62,8 +66,9 @@ func ParseContext(cmd *cobra.Command) Context {
 	}
 
 	context := Context{
-		Root: rootPath,
-		Name: parsedContext.Name,
+		Root:     rootPath,
+		Name:     parsedContext.Name,
+		Projects: parsedContext.Projects,
 	}
 	return context
 }
