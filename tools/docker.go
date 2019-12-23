@@ -49,12 +49,12 @@ func GetComposeConfig(context internal.Context) ComposeConfig {
 
 // CreateComposeConfig creates the project docker-compose.yml
 func CreateComposeConfig(context internal.Context) {
-	compose := GetComposeConfig(context)
-	composeYaml, _ := yaml.Marshal(compose)
-	composeContent := strings.Join([]string{composeHeader, string(composeYaml)}, "")
+	config := GetComposeConfig(context)
+	configYaml, _ := yaml.Marshal(config)
+	content := strings.Join([]string{composeHeader, string(configYaml)}, "")
 
 	composePath := filepath.Join(context.Root, "docker-compose.yml")
-	err := ioutil.WriteFile(composePath, []byte(composeContent), 0644)
+	err := ioutil.WriteFile(composePath, []byte(content), 0644)
 	if err != nil {
 		panic(err)
 	}
