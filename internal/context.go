@@ -9,21 +9,30 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type project struct {
+// Project defines a domain-reachable app
+type Project struct {
 	Path string
 	Name string
 }
 
-type contextYaml struct {
-	Name     string
-	Projects []project
+// Services represents external dependencies
+type Services struct {
+	Postgres bool
+	Redis    bool
 }
 
-// Context for the overarching project
+type contextYaml struct {
+	Name     string
+	Projects []Project
+	Services Services
+}
+
+// Context for the overarching repository
 type Context struct {
 	Root     string
 	Name     string
-	Projects []project
+	Projects []Project
+	Services Services
 }
 
 func parseRootPath(cmd *cobra.Command) (string, error) {
@@ -69,6 +78,7 @@ func ParseContext(cmd *cobra.Command) Context {
 		Root:     rootPath,
 		Name:     parsedContext.Name,
 		Projects: parsedContext.Projects,
+		Services: parsedContext.Services,
 	}
 	return context
 }
