@@ -1,11 +1,17 @@
 package internal
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
+	"github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 )
+
+type projectYaml struct {
+	Name string
+}
 
 // Context for the overarching project
 type Context struct {
@@ -13,7 +19,7 @@ type Context struct {
 	Name string
 }
 
-func parseRootPath(cmd *cobra.Command) string {
+func parseRootPath(cmd *cobra.Command) (string, error) {
 	// Get the root project path based on flag or cwd
 	root := ""
 	if cmd.Flag("root") != nil {
@@ -22,29 +28,39 @@ func parseRootPath(cmd *cobra.Command) string {
 		cwd, err := os.Getwd()
 		root = cwd
 		if err != nil {
-			return ""
+			return "", err
 		}
 	}
 
 	// Convert to absolute path
 	root, err := filepath.Abs(root)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
-	return root
+	return root, nil
 }
 
 // ParseContext returns Context for a given project
 func ParseContext(cmd *cobra.Command) Context {
-	rootPath := parseRootPath(cmd)
-	if rootPath == "" {
-		panic("Failed to parse project root path")
+	rootPath, err := parseRootPath(cmd)
+	if err != nil {
+		panic(err)
+	}
+
+	var project projectYaml
+	source, err := ioutil.ReadFile(filepath.Join(rootPath, "pack.yml"))
+	if err != nil {
+		panic(err)
+	}
+	err = yaml.Unmarshal(source, &project)
+	if err != nil {
+		panic(err)
 	}
 
 	context := Context{
 		Root: rootPath,
-		Name: "",
+		Name: project.Name,
 	}
 	return context
 }
