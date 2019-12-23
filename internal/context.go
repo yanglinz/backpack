@@ -9,7 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type projectYaml struct {
+type project struct {
+}
+
+type contextYaml struct {
 	Name string
 }
 
@@ -48,19 +51,19 @@ func ParseContext(cmd *cobra.Command) Context {
 		panic(err)
 	}
 
-	var project projectYaml
+	var parsedContext contextYaml
 	source, err := ioutil.ReadFile(filepath.Join(rootPath, "pack.yml"))
 	if err != nil {
 		panic(err)
 	}
-	err = yaml.Unmarshal(source, &project)
+	err = yaml.Unmarshal(source, &parsedContext)
 	if err != nil {
 		panic(err)
 	}
 
 	context := Context{
 		Root: rootPath,
-		Name: project.Name,
+		Name: parsedContext.Name,
 	}
 	return context
 }
