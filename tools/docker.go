@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -38,6 +37,10 @@ type ComposeConfig struct {
 	Services map[string]interface{} `yaml:"services"`
 }
 
+func getStartCommand(bashCommands []string) string {
+	return "bash -c \"" + strings.Join(bashCommands, " \\\n && ") + "\""
+}
+
 func getDependentServices(context internal.Context) map[string]interface{} {
 	services := make(map[string]interface{})
 
@@ -67,12 +70,55 @@ func getDependentServices(context internal.Context) map[string]interface{} {
 	return services
 }
 
+func getServerService(context internal.Context, project internal.Project) (string, composeService) {
+	build := composeBuild{
+		Context:    ".",
+		Dockerfile: ".backpack/configs/docker/python-dev.Dockerfile",
+	}
+
+	startCommand := "./backpack/docker/init/dev-django.sh"
+	commands := []string{startCommand}
+	if context.Services.Postgres {
+		commands = []string{
+			".backpack/configs/scripts/wait-for-it.sh -t 60 postgres:5432",
+			".backpack/configs/scripts/wait-for-pg.sh",
+			"sleep 2",
+		}
+	}
+
+	environment := []string{
+		"DJANGO_SETTINGS_MODULE=" + filepath.Join(project.Path, "settings.py"),
+		// Set a custom local dev only env var to help applications
+		// Distinguish whether they're running locally or in GCP
+		"BACKPACK_DOCKER_COMPOSE=true",
+	}
+
+	dependsOn := []string{}
+	if context.Services.Postgres {
+		dependsOn = append(dependsOn, "postgres")
+	}
+	if context.Services.Redis {
+		dependsOn = append(dependsOn, "redis")
+	}
+
+	service := composeService{
+		Build:       build,
+		Environment: environment,
+		Command:     getStartCommand(commands),
+		DependsOn:   dependsOn,
+	}
+
+	serviceName := project.Name + "_server"
+	return serviceName, service
+}
+
 func getServerServices(context internal.Context) map[string]interface{} {
 	services := make(map[string]interface{})
 
+	// Add server services
 	for _, p := range context.Projects {
-		settingsPath := filepath.Join(p.Path, "settings.py")
-		fmt.Println(settingsPath)
+		serviceName, service := getServerService(context, p)
+		services[serviceName] = service
 	}
 
 	return services
