@@ -87,6 +87,9 @@ func getServerService(context internal.Context, project internal.Project) (strin
 		}
 	}
 
+	ports := []string{"8000:8000"}
+	volumes := []string{".:/app/", "/app/node_modules", "$HOME/.aws:/home/app/.aws/"}
+
 	environment := []string{
 		"DJANGO_SETTINGS_MODULE=" + filepath.Join(project.Path, "settings.py"),
 		// Set a custom local dev only env var to help applications
@@ -104,8 +107,10 @@ func getServerService(context internal.Context, project internal.Project) (strin
 
 	service := composeService{
 		Build:       build,
-		Environment: environment,
 		Command:     getStartCommand(commands),
+		Ports:       ports,
+		Volumes:     volumes,
+		Environment: environment,
 		DependsOn:   dependsOn,
 	}
 
