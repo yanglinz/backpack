@@ -4,7 +4,7 @@ IFS=$'\n\t'
 
 RELEASE_BRANCH="master"
 SOURCE_IMAGE="source-image"
-DOCKER_REPO="gcr.io/${GCP_PROJECT_ID}/${APP_NAME}"
+DOCKER_REGISTRY="gcr.io/${GCP_PROJECT_ID}/${APP_NAME}"
 
 function build_release() {
   docker build \
@@ -15,8 +15,8 @@ function build_release() {
 
 function publish_release() {
   gcloud auth configure-docker
-  docker tag "$SOURCE_IMAGE" "$DOCKER_REPO"
-  docker push "$DOCKER_REPO"
+  docker tag "$SOURCE_IMAGE" "$DOCKER_REGISTRY"
+  docker push "$DOCKER_REGISTRY"
 }
 
 build_release
