@@ -76,7 +76,7 @@ func getServerService(context internal.Context, project internal.Project) (strin
 		Dockerfile: ".backpack/configs/docker/python-dev.Dockerfile",
 	}
 
-	startCommand := "./.backpack/configs/scripts/dev-django.sh"
+	startCommand := ".backpack/configs/scripts/dev-django.sh"
 	commands := []string{startCommand}
 	if context.Services.Postgres {
 		commands = []string{
@@ -90,8 +90,10 @@ func getServerService(context internal.Context, project internal.Project) (strin
 	ports := []string{"8000:8000"}
 	volumes := []string{".:/app/", "/app/node_modules", "$HOME/.aws:/home/app/.aws/"}
 
+	djangoSettingsModule := filepath.Join(project.Path, "settings")
+	djangoSettingsModule = strings.ReplaceAll(djangoSettingsModule, "/", ".")
 	environment := []string{
-		"DJANGO_SETTINGS_MODULE=" + filepath.Join(project.Path, "settings.py"),
+		"DJANGO_SETTINGS_MODULE=" + djangoSettingsModule,
 		// Set a custom local dev only env var to help applications
 		// Distinguish whether they're running locally or in GCP
 		"BACKPACK_DOCKER_COMPOSE=true",
