@@ -1,4 +1,4 @@
-resource "google_cloud_run_service" "default" {
+resource "google_cloud_run_service" "cloud_run" {
   name     = "cloudrun-test"
   location = "us-central1"
 
@@ -11,16 +11,16 @@ resource "google_cloud_run_service" "default" {
   }
 }
 
-data "google_iam_policy" "noauth" {
+data "google_iam_policy" "cloud_run_policy" {
   binding {
     role    = "roles/run.invoker"
     members = ["allUsers"]
   }
 }
 
-resource "google_cloud_run_service_iam_policy" "noauth" {
-  location    = google_cloud_run_service.default.location
-  project     = google_cloud_run_service.default.project
-  service     = google_cloud_run_service.default.name
-  policy_data = data.google_iam_policy.noauth.policy_data
+resource "google_cloud_run_service_iam_policy" "cloud_run_policy" {
+  location    = google_cloud_run_service.cloud_run.location
+  project     = google_cloud_run_service.cloud_run.project
+  service     = google_cloud_run_service.cloud_run.name
+  policy_data = data.google_iam_policy.cloud_run_policy.policy_data
 }
