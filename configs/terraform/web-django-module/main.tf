@@ -3,7 +3,7 @@ locals {
 }
 
 resource "google_cloud_run_service" "cloud_run" {
-  name     = "cloudrun-test"
+  name     = "${var.context_name}-${var.project_name}-service"
   location = "us-central1"
 
   template {

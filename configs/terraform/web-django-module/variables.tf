@@ -2,6 +2,10 @@ variable "context_name" {
   type = string
 }
 
+variable "project_name" {
+  type = string
+}
+
 variable "image_tag" {
   type = string
 }
