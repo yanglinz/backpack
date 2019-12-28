@@ -11,11 +11,21 @@ var setupCmd = &cobra.Command{
 	Short: "🏁 Setup project",
 	Long:  "🏁 Setup project",
 	Run: func(cmd *cobra.Command, args []string) {
+		setupFiles, _ := cmd.Flags().GetBool("files")
+		setupResources, _ := cmd.Flags().GetBool("resources")
 		context := internal.ParseContext(cmd)
-		tools.CreateComposeConfig(context)
+
+		if setupFiles {
+			tools.CreateComposeConfig(context)
+		}
+		if setupResources {
+			tools.BootstrapSecrets(context)
+		}
 	},
 }
 
 func init() {
+	setupCmd.Flags().Bool("files", true, "setup project files")
+	setupCmd.Flags().Bool("resources", false, "setup remote resources")
 	rootCmd.AddCommand(setupCmd)
 }

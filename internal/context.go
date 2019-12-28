@@ -27,12 +27,17 @@ type contextYaml struct {
 	Services Services
 }
 
+type contextGoogle struct {
+	ProjectID string
+}
+
 // Context for the overarching repository
 type Context struct {
 	Root     string
 	Name     string
 	Projects []Project
 	Services Services
+	Google   contextGoogle
 }
 
 func parseRootPath(cmd *cobra.Command) (string, error) {
@@ -74,11 +79,14 @@ func ParseContext(cmd *cobra.Command) Context {
 		panic(err)
 	}
 
+	google := contextGoogle{ProjectID: "default-263000"}
+
 	context := Context{
 		Root:     rootPath,
 		Name:     parsedContext.Name,
 		Projects: parsedContext.Projects,
 		Services: parsedContext.Services,
+		Google:   google,
 	}
 	return context
 }
