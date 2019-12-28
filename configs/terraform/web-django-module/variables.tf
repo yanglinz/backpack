@@ -1,4 +1,4 @@
-variable "project_name" {
+variable "context_name" {
   type = string
 }
 

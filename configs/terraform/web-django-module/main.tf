@@ -1,5 +1,5 @@
 locals {
-  docker_image = "gcr.io/${var.gcp_project}/${var.project_name}:${var.image_tag}"
+  docker_image = "gcr.io/${var.gcp_project}/${var.context_name}:${var.image_tag}"
 }
 
 resource "google_cloud_run_service" "cloud_run" {
