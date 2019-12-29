@@ -88,7 +88,11 @@ func getServerService(context internal.Context, project internal.Project) (strin
 	}
 
 	ports := []string{"8000:8000"}
-	volumes := []string{".:/app/", "/app/node_modules", "$HOME/.aws:/home/app/.aws/"}
+	volumes := []string{
+		".:/app/", 
+		"/app/node_modules", 
+		"$HOME/.config/gcloud:/home/app/.config/gcloud",
+	}
 
 	djangoSettingsModule := filepath.Join(project.Path, "settings")
 	djangoSettingsModule = strings.ReplaceAll(djangoSettingsModule, "/", ".")

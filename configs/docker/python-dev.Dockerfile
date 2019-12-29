@@ -8,6 +8,10 @@ RUN /tmp/install-watchman.sh
 
 ENV PYTHONUNBUFFERED 1
 
+# Install gcloud
+COPY .backpack/configs/scripts/install-gcloud.sh /tmp/
+RUN /tmp/install-gcloud.sh
+
 # Install dependencies
 RUN apt-get update && apt-get install -y \
   git \
