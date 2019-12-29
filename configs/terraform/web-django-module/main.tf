@@ -1,5 +1,6 @@
 locals {
-  docker_image = "gcr.io/${var.gcp_project}/${var.context_name}:${var.image_tag}"
+  docker_image   = "gcr.io/${var.gcp_project}/${var.context_name}:${var.image_tag}"
+  berglas_bucket = "backpack-berglas-${var.context_name}"
 }
 
 resource "google_cloud_run_service" "cloud_run" {
@@ -13,6 +14,10 @@ resource "google_cloud_run_service" "cloud_run" {
         env {
           name  = "DJANGO_SETTINGS_MODULE"
           value = var.django_settings_module
+        }
+        env {
+          name  = "BERGLAS_BUCKET"
+          value = local.berglas_bucket
         }
       }
     }
