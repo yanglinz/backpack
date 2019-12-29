@@ -18,6 +18,9 @@ RUN apk add --no-cache \
   postgresql-dev \
   postgresql-client
 
+# Install berglas
+COPY --from=gcr.io/berglas/berglas:0.5.0 /bin/berglas /bin/berglas
+
 # Install application dependencies
 RUN mkdir -p /app
 WORKDIR /app
@@ -45,4 +48,4 @@ COPY --chown=backpack:backpack . /app
 
 # Entrypoint
 STOPSIGNAL SIGTERM
-ENTRYPOINT [".backpack/configs/scripts/prod-django.sh"]
+ENTRYPOINT [".backpack/runtime/django-prod.sh"]

@@ -10,8 +10,11 @@ ENV PYTHONUNBUFFERED 1
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    git \
-    postgresql-client
+  git \
+  postgresql-client
+
+# Install berglas
+COPY --from=gcr.io/berglas/berglas:0.5.0 /bin/berglas /bin/berglas
 
 # Setup the working directory
 RUN mkdir /app && mkdir /home/app

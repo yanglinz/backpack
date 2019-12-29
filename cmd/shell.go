@@ -13,7 +13,7 @@ var shellCmd = &cobra.Command{
 		context := internal.ParseContext(cmd)
 		serviceName := context.Projects[0].Name + "_server"
 		shell := internal.GetCommand(
-			"docker-compose run " + serviceName + " .backpack/configs/scripts/dev-shell.sh",
+			"docker-compose run " + serviceName + " .backpack/runtime/django-shell.sh",
 		)
 		err := shell.Run()
 		if err != nil {

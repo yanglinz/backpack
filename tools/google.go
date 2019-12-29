@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/GoogleCloudPlatform/berglas/pkg/berglas"
@@ -27,20 +28,80 @@ func bucketExists(bucketName string) bool {
 // BootstrapSecrets for berglas
 func BootstrapSecrets(backpack internal.Context) {
 	ctx := context.Background()
-	bucketNames := []string{
-		"backpack-berglas-" + backpack.Name,
-		"backpack-dev-berglas-" + backpack.Name,
-	}
-	for _, bucket := range bucketNames {
-		exists := bucketExists(bucket)
-		if !exists {
-			err := berglas.Bootstrap(ctx, &berglas.StorageBootstrapRequest{
-				ProjectID: backpack.Google.ProjectID,
-				Bucket:    bucket,
-			})
-			if err != nil {
-				panic(err)
-			}
+	bucketName := "backpack-berglas-" + backpack.Name
+	exists := bucketExists(bucketName)
+	if !exists {
+		err := berglas.Bootstrap(ctx, &berglas.StorageBootstrapRequest{
+			ProjectID: backpack.Google.ProjectID,
+			Bucket:    bucketName,
+		})
+		if err != nil {
+			panic(err)
 		}
+
+		CreateSecret(backpack, CreateSecretRequest{
+			Name:  "BERGLAS_APP_JSON",
+			Value: "{}",
+		})
+		CreateSecret(backpack, CreateSecretRequest{
+			Name:  "BERGLAS_APP_DEV_JSON",
+			Value: "{}",
+		})
+	}
+}
+
+// ListSecrets outputs a list of secrets
+func ListSecrets(backpack internal.Context) {
+	bucketName := "backpack-berglas-" + backpack.Name
+	shell := internal.GetCommand("berglas list " + bucketName)
+	err := shell.Run()
+	if err != nil {
+		panic(err)
+	}
+}
+
+// CreateSecretRequest params
+type CreateSecretRequest struct {
+	Name  string
+	Value string
+}
+
+// CreateSecret creates or updates a secret
+func CreateSecret(backpack internal.Context, req CreateSecretRequest) {
+	bucketName := "backpack-berglas-" + backpack.Name
+	bucketPath := bucketName + "/" + req.Name
+	encryptionKey := "projects/" + backpack.Google.ProjectID + "/locations/global/keyRings/berglas/cryptoKeys/berglas-key"
+	parts := []string{
+		"berglas create", bucketPath, req.Value,
+		"--key", encryptionKey,
+	}
+	command := strings.Join(parts, " ")
+	shell := internal.GetCommand(command)
+	err := shell.Run()
+	if err != nil {
+		panic(err)
+	}
+}
+
+// UpdateSecretRequest params
+type UpdateSecretRequest struct {
+	Name  string
+	Value string
+}
+
+// UpdateSecret creates or updates a secret
+func UpdateSecret(backpack internal.Context, req UpdateSecretRequest) {
+	bucketName := "backpack-berglas-" + backpack.Name
+	bucketPath := bucketName + "/" + req.Name
+	encryptionKey := "projects/" + backpack.Google.ProjectID + "/locations/global/keyRings/berglas/cryptoKeys/berglas-key"
+	parts := []string{
+		"berglas update", bucketPath, req.Value,
+		"--key", encryptionKey,
+	}
+	command := strings.Join(parts, " ")
+	shell := internal.GetCommand(command)
+	err := shell.Run()
+	if err != nil {
+		panic(err)
 	}
 }
