@@ -28,7 +28,8 @@ type contextYaml struct {
 }
 
 type contextGoogle struct {
-	ProjectID string
+	ProjectID     string
+	ProjectNumber string
 }
 
 // Context for the overarching repository
@@ -79,7 +80,10 @@ func ParseContext(cmd *cobra.Command) Context {
 		panic(err)
 	}
 
-	google := contextGoogle{ProjectID: "default-263000"}
+	google := contextGoogle{
+		ProjectID:     "default-263000",
+		ProjectNumber: "532331252493",
+	}
 
 	context := Context{
 		Root:     rootPath,

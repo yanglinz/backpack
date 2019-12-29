@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"cloud.google.com/go/storage"
@@ -25,29 +26,70 @@ func bucketExists(bucketName string) bool {
 	return false
 }
 
+func bootstrapServiceAccount(backpack internal.Context) {
+	// Create service account to fetch secrets
+	serviceAccountName := "cloudrun-berglas-" + backpack.Name
+	parts := []string{
+		"gcloud iam service-accounts create",
+		serviceAccountName,
+		"--project", backpack.Google.ProjectID,
+	}
+	command := strings.Join(parts, " ")
+	shell := internal.GetCommand(command)
+	err := shell.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	// Grant service account access to secrets
+	serviceAccountEmail := fmt.Sprintf(
+		"serviceAccount:%s@%s.iam.gserviceaccount.com",
+		serviceAccountName,
+		backpack.Google.ProjectID,
+	)
+	bucketName := "backpack-berglas-" + backpack.Name
+	grantKey := bucketName + "/BERGLAS_APP_JSON"
+	parts = []string{
+		"berglas grant", grantKey,
+		"--member", serviceAccountEmail,
+	}
+	command = strings.Join(parts, " ")
+	shell = internal.GetCommand(command)
+	err = shell.Run()
+	if err != nil {
+		panic(err)
+	}
+}
+
 // BootstrapSecrets for berglas
 func BootstrapSecrets(backpack internal.Context) {
 	ctx := context.Background()
 	bucketName := "backpack-berglas-" + backpack.Name
 	exists := bucketExists(bucketName)
-	if !exists {
-		err := berglas.Bootstrap(ctx, &berglas.StorageBootstrapRequest{
-			ProjectID: backpack.Google.ProjectID,
-			Bucket:    bucketName,
-		})
-		if err != nil {
-			panic(err)
-		}
-
-		CreateSecret(backpack, CreateSecretRequest{
-			Name:  "BERGLAS_APP_JSON",
-			Value: "{}",
-		})
-		CreateSecret(backpack, CreateSecretRequest{
-			Name:  "BERGLAS_APP_DEV_JSON",
-			Value: "{}",
-		})
+	if exists {
+		return
 	}
+
+	// Run the berglas bootstrap command
+	err := berglas.Bootstrap(ctx, &berglas.StorageBootstrapRequest{
+		ProjectID: backpack.Google.ProjectID,
+		Bucket:    bucketName,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	// Bootstrap the initial secrets
+	CreateSecret(backpack, CreateSecretRequest{
+		Name:  "BERGLAS_APP_JSON",
+		Value: "{}",
+	})
+	CreateSecret(backpack, CreateSecretRequest{
+		Name:  "BERGLAS_APP_DEV_JSON",
+		Value: "{}",
+	})
+
+	bootstrapServiceAccount(backpack)
 }
 
 // ListSecrets outputs a list of secrets

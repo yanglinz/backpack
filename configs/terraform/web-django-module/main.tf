@@ -1,6 +1,7 @@
 locals {
-  docker_image   = "gcr.io/${var.gcp_project}/${var.context_name}:${var.image_tag}"
-  berglas_bucket = "backpack-berglas-${var.context_name}"
+  docker_image    = "gcr.io/${var.gcp_project}/${var.context_name}:${var.image_tag}"
+  berglas_bucket  = "backpack-berglas-${var.context_name}"
+  service_account = "cloudrun-berglas-${var.context_name}@${var.gcp_project}.iam.gserviceaccount.com"
 }
 
 resource "google_cloud_run_service" "cloud_run" {
@@ -16,14 +17,11 @@ resource "google_cloud_run_service" "cloud_run" {
           value = var.django_settings_module
         }
         env {
-          name  = "BERGLAS_BUCKET"
-          value = local.berglas_bucket
-        }
-        env {
           name  = "BERGLAS_APP_JSON"
           value = "berglas://${local.berglas_bucket}/BERGLAS_APP_JSON"
         }
       }
+      service_account_name = local.service_account
     }
   }
 }
@@ -31,11 +29,6 @@ resource "google_cloud_run_service" "cloud_run" {
 data "google_iam_policy" "cloud_run_policy" {
   binding {
     role    = "roles/run.invoker"
-    members = ["allUsers"]
-  }
-
-  binding {
-    role = "roles/storage.objectViewer"
     members = ["allUsers"]
   }
 }

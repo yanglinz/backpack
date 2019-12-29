@@ -19,4 +19,4 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("json_path", type=str)
     args = parser.parse_args()
-    output_bash_commands(json_path)
+    output_bash_commands(args.json_path)
