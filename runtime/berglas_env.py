@@ -12,7 +12,9 @@ def parse_json(json_path):
 
 def output_bash_commands(json_path):
     for k, v in parse_json(json_path).items():
-        print(f"export {k}={shlex.quote(v)}")
+        value = shlex.quote(str(v))
+        export = f"export {k}={value}"
+        print(export)
 
 
 if __name__ == "__main__":
