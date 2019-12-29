@@ -19,6 +19,10 @@ resource "google_cloud_run_service" "cloud_run" {
           name  = "BERGLAS_BUCKET"
           value = local.berglas_bucket
         }
+        env {
+          name  = "BERGLAS_APP_JSON"
+          value = "berglas://${local.berglas_bucket}/BERGLAS_APP_JSON"
+        }
       }
     }
   }
@@ -27,6 +31,11 @@ resource "google_cloud_run_service" "cloud_run" {
 data "google_iam_policy" "cloud_run_policy" {
   binding {
     role    = "roles/run.invoker"
+    members = ["allUsers"]
+  }
+
+  binding {
+    role = "roles/storage.objectViewer"
     members = ["allUsers"]
   }
 }
