@@ -1,10 +1,18 @@
 package cmd
 
 import (
+	"os"
+	"path/filepath"
+
 	"github.com/spf13/cobra"
 	"github.com/yanglinz/backpack/internal"
 	"github.com/yanglinz/backpack/tools"
 )
+
+func setupSecrets(backpack internal.Context) {
+	envDir := filepath.Join(backpack.Root, ".env")
+	os.Mkdir(envDir, 0777)
+}
 
 var setupCmd = &cobra.Command{
 	Use:   "setup",
@@ -13,13 +21,15 @@ var setupCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		setupFiles, _ := cmd.Flags().GetBool("files")
 		setupResources, _ := cmd.Flags().GetBool("resources")
-		context := internal.ParseContext(cmd)
+		backpack := internal.ParseContext(cmd)
+
+		setupSecrets(backpack)
 
 		if setupFiles {
-			tools.CreateComposeConfig(context)
+			tools.CreateComposeConfig(backpack)
 		}
 		if setupResources {
-			tools.BootstrapSecrets(context)
+			tools.BootstrapSecrets(backpack)
 		}
 	},
 }
