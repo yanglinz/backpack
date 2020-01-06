@@ -1,0 +1,41 @@
+package cmd
+
+import (
+	"os"
+	"path/filepath"
+
+	"github.com/spf13/cobra"
+	"github.com/yanglinz/backpack/internal"
+	"github.com/yanglinz/backpack/tools"
+)
+
+func setupSecrets(backpack internal.Context) {
+	envDir := filepath.Join(backpack.Root, ".env")
+	os.Mkdir(envDir, 0777)
+}
+
+var setupCmd = &cobra.Command{
+	Use:   "setup",
+	Short: "🏁 Setup project",
+	Long:  "🏁 Setup project",
+	Run: func(cmd *cobra.Command, args []string) {
+		setupFiles, _ := cmd.Flags().GetBool("files")
+		setupResources, _ := cmd.Flags().GetBool("resources")
+		backpack := internal.ParseContext(cmd)
+
+		setupSecrets(backpack)
+
+		if setupFiles {
+			tools.CreateComposeConfig(backpack)
+		}
+		if setupResources {
+			tools.BootstrapSecrets(backpack)
+		}
+	},
+}
+
+func init() {
+	setupCmd.Flags().Bool("files", true, "setup project files")
+	setupCmd.Flags().Bool("resources", false, "setup remote resources")
+	rootCmd.AddCommand(setupCmd)
+}
