@@ -147,3 +147,32 @@ func UpdateSecret(backpack internal.Context, req UpdateSecretRequest) {
 		panic(err)
 	}
 }
+
+// GetSecret list a single secret
+func GetSecret(backpack internal.Context, name string) string {
+	bucketName := "backpack-berglas-" + backpack.Name
+	bucketPath := bucketName + "/" + name
+	parts := []string{"berglas access", bucketPath}
+	command := strings.Join(parts, " ")
+	shell := internal.GetCommand(command)
+	shell.Stdout = nil
+	out, err := shell.Output()
+	if err != nil {
+		panic(err)
+	}
+
+	return string(out)
+}
+
+// DeleteSecret removes a secret
+func DeleteSecret(backpack internal.Context, name string) {
+	bucketName := "backpack-berglas-" + backpack.Name
+	bucketPath := bucketName + "/" + name
+	parts := []string{"berglas delete", bucketPath}
+	command := strings.Join(parts, " ")
+	shell := internal.GetCommand(command)
+	err := shell.Run()
+	if err != nil {
+		panic(err)
+	}
+}
