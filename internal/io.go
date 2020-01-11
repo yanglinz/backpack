@@ -6,6 +6,12 @@ import (
 	"strings"
 )
 
+// Exists checks if filename exists
+func Exists(filename string) bool {
+	_, err := os.Stat(filename)
+	return !os.IsNotExist(err)
+}
+
 // GetCommand returns a execution command
 func GetCommand(command string) *exec.Cmd {
 	commandList := strings.Split(command, " ")

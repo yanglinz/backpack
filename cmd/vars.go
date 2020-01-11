@@ -8,8 +8,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/yanglinz/backpack/internal"
-	"github.com/yanglinz/backpack/internal/symbols"
 	"github.com/yanglinz/backpack/google"
+	"github.com/yanglinz/backpack/symbols"
 )
 
 var varsContextCmd = &cobra.Command{

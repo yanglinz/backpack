@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/yanglinz/backpack/development"
 	"github.com/yanglinz/backpack/docker"
 	"github.com/yanglinz/backpack/google"
 	"github.com/yanglinz/backpack/internal"
@@ -27,6 +28,8 @@ var setupCmd = &cobra.Command{
 		setupSecrets(backpack)
 
 		if setupFiles {
+			development.SetupTaskfileBin(backpack)
+			development.SetupTaskfile(backpack)
 			docker.CreateComposeConfig(backpack)
 		}
 		if setupResources {
