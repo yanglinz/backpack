@@ -8,34 +8,35 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/yanglinz/backpack/internal"
-	"github.com/yanglinz/backpack/tools"
+	"github.com/yanglinz/backpack/internal/symbols"
+	"github.com/yanglinz/backpack/google"
 )
 
 var varsContextCmd = &cobra.Command{
 	Use:   "context",
-	Short: "📖 Output current context info",
-	Long:  "📖 Output current context info",
+	Short: "Output current context info",
+	Long:  "Output current context info",
 	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		backpack := internal.ParseContext(cmd)
-		tools.ListSecrets(backpack)
+		google.ListSecrets(backpack)
 	},
 }
 
 var varsGetCmd = &cobra.Command{
 	Use:   "get",
-	Short: "💾 Sync variables from cloud to local file",
-	Long:  "💾 Sync variables from cloud to local file",
+	Short: "Sync variables from cloud to local file",
+	Long:  "Sync variables from cloud to local file",
 	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		env, _ := cmd.Flags().GetString("env")
 		backpack := internal.ParseContext(cmd)
 
 		secretKey := "BERGLAS_APP_DEV_JSON"
-		if env == internal.Production {
+		if env == symbols.EnvProduction {
 			secretKey = "BERGLAS_APP_JSON"
 		}
-		secret := tools.GetSecret(backpack, secretKey)
+		secret := google.GetSecret(backpack, secretKey)
 
 		var envJSON map[string]string
 		json.Unmarshal([]byte(secret), &envJSON)
@@ -50,8 +51,8 @@ var varsGetCmd = &cobra.Command{
 
 var varsPutCmd = &cobra.Command{
 	Use:   "put",
-	Short: "📡 Sync variables from local file to cloud",
-	Long:  "📡 Sync variables from local file to cloud",
+	Short: "Sync variables from local file to cloud",
+	Long:  "Sync variables from local file to cloud",
 	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		env, _ := cmd.Flags().GetString("env")
@@ -59,7 +60,7 @@ var varsPutCmd = &cobra.Command{
 
 		secretKey := "BERGLAS_APP_DEV_JSON"
 		envFile := filepath.Join(backpack.Root, ".env/development.json")
-		if env == internal.Production {
+		if env == symbols.EnvProduction {
 			secretKey = "BERGLAS_APP_JSON"
 			envFile = filepath.Join(backpack.Root, ".env/production.json")
 		}
@@ -76,7 +77,7 @@ var varsPutCmd = &cobra.Command{
 			panic(err)
 		}
 
-		tools.UpdateSecret(backpack, tools.UpdateSecretRequest{
+		google.UpdateSecret(backpack, google.UpdateSecretRequest{
 			Name:  secretKey,
 			Value: string(formattedJSON),
 		})
@@ -85,12 +86,12 @@ var varsPutCmd = &cobra.Command{
 
 var varsInternalNewCmd = &cobra.Command{
 	Use:   "_new",
-	Short: "🔒 Create a new variable by name",
-	Long:  "🔒 Create a new variable by name",
+	Short: "Create a new variable by name",
+	Long:  "Create a new variable by name",
 	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		backpack := internal.ParseContext(cmd)
-		tools.CreateSecret(backpack, tools.CreateSecretRequest{
+		google.CreateSecret(backpack, google.CreateSecretRequest{
 			Name:  args[0],
 			Value: args[1],
 		})
@@ -99,12 +100,12 @@ var varsInternalNewCmd = &cobra.Command{
 
 var varsInternalUpdateCmd = &cobra.Command{
 	Use:   "_update",
-	Short: "🔒 Update a variable by name",
-	Long:  "🔒 Update a variable by name",
+	Short: "Update a variable by name",
+	Long:  "Update a variable by name",
 	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		backpack := internal.ParseContext(cmd)
-		tools.UpdateSecret(backpack, tools.UpdateSecretRequest{
+		google.UpdateSecret(backpack, google.UpdateSecretRequest{
 			Name:  args[0],
 			Value: args[1],
 		})
@@ -113,19 +114,19 @@ var varsInternalUpdateCmd = &cobra.Command{
 
 var varsInternalDeleteCmd = &cobra.Command{
 	Use:   "_delete",
-	Short: "🔒 Delete a variable by name",
-	Long:  "🔒 Update a variable by name",
+	Short: "Delete a variable by name",
+	Long:  "Update a variable by name",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		backpack := internal.ParseContext(cmd)
-		tools.DeleteSecret(backpack, args[0])
+		google.DeleteSecret(backpack, args[0])
 	},
 }
 
 var varsCmd = &cobra.Command{
 	Use:   "vars",
-	Short: "🔑 Configure environmental variables and secrets",
-	Long:  "🔑 Configure environmental variables and secrets",
+	Short: "Configure environmental variables and secrets",
+	Long:  "Configure environmental variables and secrets",
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
@@ -134,9 +135,9 @@ var varsCmd = &cobra.Command{
 func init() {
 	varsCmd.AddCommand(varsContextCmd)
 
-	varsGetCmd.Flags().String("env", internal.Development, "environment")
+	varsGetCmd.Flags().String("env", symbols.EnvDevelopment, "environment")
 	varsCmd.AddCommand(varsGetCmd)
-	varsPutCmd.Flags().String("env", internal.Development, "environment")
+	varsPutCmd.Flags().String("env", symbols.EnvDevelopment, "environment")
 	varsCmd.AddCommand(varsPutCmd)
 
 	varsCmd.AddCommand(varsInternalNewCmd)

@@ -1,4 +1,4 @@
-package tools
+package docker
 
 import (
 	"io/ioutil"
@@ -73,15 +73,15 @@ func getDependentServices(backpack internal.Context) map[string]interface{} {
 func getServerService(backpack internal.Context, project internal.Project) (string, composeService) {
 	build := composeBuild{
 		Context:    ".",
-		Dockerfile: ".backpack/configs/docker/python-dev.Dockerfile",
+		Dockerfile: ".backpack/docker/python-dev.Dockerfile",
 	}
 
 	startCommand := ".backpack/runtime/django-dev.sh"
 	commands := []string{startCommand}
 	if backpack.Services.Postgres {
 		commands = []string{
-			".backpack/configs/scripts/wait-for-it.sh -t 60 postgres:5432",
-			".backpack/configs/scripts/wait-for-pg.sh",
+			".backpack/docker/scripts/wait-for-it.sh -t 60 postgres:5432",
+			".backpack/docker/scripts/wait-for-pg.sh",
 			"sleep 2",
 			startCommand,
 		}

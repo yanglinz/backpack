@@ -5,8 +5,9 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/yanglinz/backpack/docker"
+	"github.com/yanglinz/backpack/google"
 	"github.com/yanglinz/backpack/internal"
-	"github.com/yanglinz/backpack/tools"
 )
 
 func setupSecrets(backpack internal.Context) {
@@ -26,10 +27,10 @@ var setupCmd = &cobra.Command{
 		setupSecrets(backpack)
 
 		if setupFiles {
-			tools.CreateComposeConfig(backpack)
+			docker.CreateComposeConfig(backpack)
 		}
 		if setupResources {
-			tools.BootstrapSecrets(backpack)
+			google.BootstrapSecrets(backpack)
 		}
 	},
 }

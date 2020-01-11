@@ -3,13 +3,13 @@ FROM python:3.7
 # Install watchman
 # This step takes a LONG time, so cache this layer first
 ARG DISABLE_WATCHMAN
-COPY .backpack/configs/watchman/install-watchman.sh /tmp/
+COPY .backpack/docker/watchman/install-watchman.sh /tmp/
 RUN /tmp/install-watchman.sh
 
 ENV PYTHONUNBUFFERED 1
 
 # Install gcloud
-COPY .backpack/configs/scripts/install-gcloud.sh /tmp/
+COPY .backpack/docker/scripts/install-gcloud.sh /tmp/
 RUN /tmp/install-gcloud.sh
 
 # Install dependencies
@@ -32,7 +32,7 @@ COPY Pipfile.lock /app/
 RUN pipenv install --dev
 
 # Copy configurations
-COPY .backpack/configs/watchman/watchman.json /etc/
+COPY .backpack/docker/watchman/watchman.json /etc/
 
 # Copy application code
 COPY . /app

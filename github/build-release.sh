@@ -9,7 +9,7 @@ RELEASE_TAG="$(. "$(dirname "$0")/hash-files.sh")"
 
 function build_release() {
   docker build \
-    -f .backpack/configs/docker/python-prod.Dockerfile \
+    -f .backpack/docker/python-prod.Dockerfile \
     --tag "$SOURCE_IMAGE" \
     .
 }
