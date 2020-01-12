@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"github.com/yanglinz/backpack/internal"
 	"github.com/yanglinz/backpack/google"
+	"github.com/yanglinz/backpack/internal"
 	"github.com/yanglinz/backpack/symbols"
 )
 
@@ -59,10 +59,10 @@ var varsPutCmd = &cobra.Command{
 		backpack := internal.ParseContext(cmd)
 
 		secretKey := "BERGLAS_APP_DEV_JSON"
-		envFile := filepath.Join(backpack.Root, ".env/development.json")
+		envFile := filepath.Join(backpack.Root, "etc/development.json")
 		if env == symbols.EnvProduction {
 			secretKey = "BERGLAS_APP_JSON"
-			envFile = filepath.Join(backpack.Root, ".env/production.json")
+			envFile = filepath.Join(backpack.Root, "etc/production.json")
 		}
 
 		envData, err := ioutil.ReadFile(envFile)

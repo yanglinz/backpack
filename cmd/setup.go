@@ -12,7 +12,7 @@ import (
 )
 
 func setupSecrets(backpack internal.Context) {
-	envDir := filepath.Join(backpack.Root, ".env")
+	envDir := filepath.Join(backpack.Root, "etc")
 	os.Mkdir(envDir, 0777)
 }
 
