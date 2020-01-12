@@ -2,4 +2,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+. "$(dirname "$0")/env-loader.sh"
+
 pipenv shell
