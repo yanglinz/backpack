@@ -30,6 +30,7 @@ var setupCmd = &cobra.Command{
 		if setupFiles {
 			development.SetupTaskfileBin(backpack)
 			development.SetupTaskfile(backpack)
+			development.CreateCertificates(backpack)
 			docker.CreateComposeConfig(backpack)
 		}
 		if setupResources {

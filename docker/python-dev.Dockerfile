@@ -14,8 +14,13 @@ RUN /tmp/install-gcloud.sh
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
+  supervisor \
+  nginx \
   git \
   postgresql-client
+
+# Stop nginx
+RUN service nginx stop
 
 # Install berglas
 COPY --from=gcr.io/berglas/berglas:0.5.0 /bin/berglas /bin/berglas
@@ -33,6 +38,7 @@ RUN pipenv install --dev
 
 # Copy configurations
 COPY .backpack/docker/watchman/watchman.json /etc/
+COPY .backpack/docker/supervisord/supervisord-dev.conf /etc/supervisord.conf
 
 # Copy application code
 COPY . /app

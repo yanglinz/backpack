@@ -4,4 +4,9 @@ IFS=$'\n\t'
 
 . "$(dirname "$0")/berglas-loader.sh"
 
-python manage.py runserver "0.0.0.0:$PORT"
+# Generate nginx conf
+# https://unix.stackexchange.com/questions/294378/replacing-only-specific-variables-with-envsubst/294400
+envsubst '${PORT}' < /app/.backpack/docker/nginx/nginx-prod.tmpl.conf > /etc/nginx/nginx.conf
+
+# Start production server
+/usr/bin/supervisord

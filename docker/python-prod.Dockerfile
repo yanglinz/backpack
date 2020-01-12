@@ -16,7 +16,10 @@ RUN apk add --no-cache \
   openssl-dev \
   python3-dev \
   postgresql-dev \
-  postgresql-client
+  postgresql-client \
+  gettext \
+  supervisor \
+  nginx
 
 # Install berglas
 COPY --from=gcr.io/berglas/berglas:0.5.0 /bin/berglas /bin/berglas
@@ -43,8 +46,22 @@ RUN mkdir -p /app \
 USER backpack
 ENV HOME /home/app
 
+# Run nginx unprivileged
+USER root
+RUN mkdir -p /var/lib/nginx/logs/ \
+  && touch /var/lib/nginx/logs/error.log \
+  && touch /var/lib/nginx/logs/access.log \
+  && chown -R backpack:backpack /var/lib/nginx/ \
+  && chown -R backpack:backpack /var/log/nginx \
+  && chown -R backpack:backpack /var/tmp/nginx/ \
+  && mkdir -p /run/nginx/ \
+  && chown -R backpack:backpack /run/nginx/
+USER backpack
+
 # Copy application code
 COPY --chown=backpack:backpack . /app
+COPY --chown=backpack:backpack .backpack/docker/nginx/nginx-prod.tmpl.conf /etc/nginx/nginx.conf
+COPY --chown=backpack:backpack .backpack/docker/supervisord/supervisord-prod.conf /etc/supervisord.conf
 
 # Entrypoint
 STOPSIGNAL SIGTERM

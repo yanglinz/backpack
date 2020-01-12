@@ -87,7 +87,7 @@ func getServerService(backpack internal.Context, project internal.Project) (stri
 		}
 	}
 
-	ports := []string{"8000:8000"}
+	ports := []string{"8000:8000", "8080:8080"}
 	volumes := []string{
 		".:/app/",
 		"/app/node_modules",
