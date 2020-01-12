@@ -10,7 +10,7 @@ import (
 
 // SetupTaskfileBin generates taskfile binary
 func SetupTaskfileBin(backpack internal.Context) {
-	binDir := filepath.Join(backpack.Root, ".bin")
+	binDir := filepath.Join(backpack.Root, "bin")
 	binPath := filepath.Join(binDir, "task")
 	if internal.Exists(binPath) {
 		return
@@ -39,7 +39,7 @@ func SetupTaskfile(backpack internal.Context) {
 
 // RunTaskfile runs the development server
 func RunTaskfile(backpack internal.Context) {
-	shell := internal.GetCommand(".bin/task -p server ui")
+	shell := internal.GetCommand("bin/task -p server ui")
 	shell.Dir = backpack.Root
 	shell.Run()
 }
