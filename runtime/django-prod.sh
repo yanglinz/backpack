@@ -9,4 +9,5 @@ IFS=$'\n\t'
 envsubst '${PORT}' < /app/.backpack/docker/nginx/nginx-prod.tmpl.conf > /etc/nginx/nginx.conf
 
 # Start production server
+mkdir -p /app/var
 /usr/bin/supervisord
