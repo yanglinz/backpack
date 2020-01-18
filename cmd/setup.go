@@ -9,6 +9,7 @@ import (
 	"github.com/yanglinz/backpack/docker"
 	"github.com/yanglinz/backpack/google"
 	"github.com/yanglinz/backpack/internal"
+	"github.com/yanglinz/backpack/terraform"
 )
 
 func setupSecrets(backpack internal.Context) {
@@ -32,6 +33,7 @@ var setupCmd = &cobra.Command{
 			development.SetupTaskfile(backpack)
 			development.CreateCertificates(backpack)
 			docker.CreateComposeConfig(backpack)
+			terraform.CreateConfig(backpack)
 		}
 		if setupResources {
 			google.BootstrapSecrets(backpack)
