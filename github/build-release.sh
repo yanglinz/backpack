@@ -24,8 +24,10 @@ function publish_release() {
 
 build_release
 
-if [ "$GITHUB_REF" == "refs/heads/${RELEASE_BRANCH}" ]; then
-  publish_release
+if [ "$GITHUB_REF" != "refs/heads/${RELEASE_BRANCH}" ]; then
+  echo "Not on ${RELEASE_BRANCH} branch. Nothing to publish."
+elif [ "$RUNTIME_PLATFORM" == "HEROKU"]; then
+  echo "Not on GCP. Nothing to publish."
 else
-  echo "Not on ${RELEASE_BRANCH} branch. Nothing to build."
+  publish_release
 fi

@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/yanglinz/backpack/google"
+	"github.com/yanglinz/backpack/heroku"
 	"github.com/yanglinz/backpack/internal"
 	"github.com/yanglinz/backpack/symbols"
 )
@@ -77,10 +78,22 @@ var varsPutCmd = &cobra.Command{
 			panic(err)
 		}
 
-		google.UpdateSecret(backpack, google.UpdateSecretRequest{
-			Name:  secretKey,
-			Value: string(formattedJSON),
-		})
+		if backpack.Runtime == symbols.RuntimeHeroku {
+			for k, v := range envJSON {
+				heroku.PutSecret(heroku.PutSecretRequest{
+					App:   "automata-backpack",
+					Name:  k,
+					Value: v,
+				})
+			}
+		}
+
+		if backpack.Runtime == symbols.RuntimeCloudrun {
+			google.UpdateSecret(backpack, google.UpdateSecretRequest{
+				Name:  secretKey,
+				Value: string(formattedJSON),
+			})
+		}
 	},
 }
 
