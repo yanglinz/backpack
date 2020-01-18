@@ -2,8 +2,11 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-BERGLAS_ENV_PY="$(dirname "$0")/berglas_env.py"
+function load_vars() {
+  berglas access "$BERGLAS_SECRET_PATH" > /tmp/berglas-app.json
+  eval $(python3 "$(dirname "$0")/load_env.py" /tmp/berglas-app.json)
+}
 
-berglas exec -- echo "$BERGLAS_APP_JSON" > /tmp/berglas-app.json
-cat /tmp/berglas-app.json
-eval $(python3 "$BERGLAS_ENV_PY" /tmp/berglas-app.json)
+if [[ -n "${BERGLAS_SECRET_PATH+set}" ]]; then
+  load_vars
+fi

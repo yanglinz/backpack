@@ -5,12 +5,15 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/yanglinz/backpack/development"
+	"github.com/yanglinz/backpack/docker"
+	"github.com/yanglinz/backpack/google"
 	"github.com/yanglinz/backpack/internal"
-	"github.com/yanglinz/backpack/tools"
+	"github.com/yanglinz/backpack/terraform"
 )
 
 func setupSecrets(backpack internal.Context) {
-	envDir := filepath.Join(backpack.Root, ".env")
+	envDir := filepath.Join(backpack.Root, "etc")
 	os.Mkdir(envDir, 0777)
 }
 
@@ -26,10 +29,14 @@ var setupCmd = &cobra.Command{
 		setupSecrets(backpack)
 
 		if setupFiles {
-			tools.CreateComposeConfig(backpack)
+			development.SetupTaskfileBin(backpack)
+			development.SetupTaskfile(backpack)
+			development.CreateCertificates(backpack)
+			docker.CreateComposeConfig(backpack)
+			terraform.CreateConfig(backpack)
 		}
 		if setupResources {
-			tools.BootstrapSecrets(backpack)
+			google.BootstrapSecrets(backpack)
 		}
 	},
 }

@@ -23,6 +23,7 @@ type Services struct {
 
 type contextYaml struct {
 	Name     string
+	Runtime  string
 	Projects []Project
 	Services Services
 }
@@ -30,12 +31,15 @@ type contextYaml struct {
 type contextGoogle struct {
 	ProjectID     string
 	ProjectNumber string
+	Region        string
+	Zone          string
 }
 
 // Context for the overarching repository
 type Context struct {
 	Root     string
 	Name     string
+	Runtime  string
 	Projects []Project
 	Services Services
 	Google   contextGoogle
@@ -71,7 +75,7 @@ func ParseContext(cmd *cobra.Command) Context {
 	}
 
 	var parsedContext contextYaml
-	source, err := ioutil.ReadFile(filepath.Join(rootPath, "pack.yml"))
+	source, err := ioutil.ReadFile(filepath.Join(rootPath, "backpack.yml"))
 	if err != nil {
 		panic(err)
 	}
@@ -83,11 +87,14 @@ func ParseContext(cmd *cobra.Command) Context {
 	google := contextGoogle{
 		ProjectID:     "default-263000",
 		ProjectNumber: "532331252493",
+		Region:        "us-central1",
+		Zone:          "us-central1-c",
 	}
 
 	context := Context{
 		Root:     rootPath,
 		Name:     parsedContext.Name,
+		Runtime:  parsedContext.Runtime,
 		Projects: parsedContext.Projects,
 		Services: parsedContext.Services,
 		Google:   google,

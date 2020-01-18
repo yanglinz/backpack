@@ -1,7 +1,7 @@
 locals {
-  docker_image    = "gcr.io/${var.gcp_project}/${var.context_name}:${var.image_tag}"
-  berglas_bucket  = "backpack-berglas-${var.context_name}"
-  service_account = "cloudrun-berglas-${var.context_name}@${var.gcp_project}.iam.gserviceaccount.com"
+  docker_image        = "gcr.io/${var.gcp_project}/${var.context_name}:${var.image_tag}"
+  berglas_secret_path = "backpack-berglas-${var.context_name}/BERGLAS_APP_JSON"
+  service_account     = "cloudrun-berglas-${var.context_name}@${var.gcp_project}.iam.gserviceaccount.com"
 }
 
 resource "google_cloud_run_service" "cloud_run" {
@@ -17,8 +17,8 @@ resource "google_cloud_run_service" "cloud_run" {
           value = var.django_settings_module
         }
         env {
-          name  = "BERGLAS_APP_JSON"
-          value = "berglas://${local.berglas_bucket}/BERGLAS_APP_JSON"
+          name  = "BERGLAS_SECRET_PATH"
+          value = local.berglas_secret_path
         }
       }
       service_account_name = local.service_account

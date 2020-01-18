@@ -1,21 +1,17 @@
 FROM python:3.7
 
-# Install watchman
-# This step takes a LONG time, so cache this layer first
-ARG DISABLE_WATCHMAN
-COPY .backpack/configs/watchman/install-watchman.sh /tmp/
-RUN /tmp/install-watchman.sh
-
 ENV PYTHONUNBUFFERED 1
-
-# Install gcloud
-COPY .backpack/configs/scripts/install-gcloud.sh /tmp/
-RUN /tmp/install-gcloud.sh
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
+  gettext-base \
+  supervisor \
+  nginx \
   git \
   postgresql-client
+
+# Stop nginx
+RUN service nginx stop
 
 # Install berglas
 COPY --from=gcr.io/berglas/berglas:0.5.0 /bin/berglas /bin/berglas
@@ -29,10 +25,16 @@ ENV HOME /home/app
 RUN pip install --no-cache-dir --trusted-host pypi.python.org pipenv
 COPY Pipfile /app/
 COPY Pipfile.lock /app/
-RUN pipenv install --dev
+RUN pipenv install --system --deploy
+RUN pip install uwsgi==2.0.18
 
-# Copy configurations
-COPY .backpack/configs/watchman/watchman.json /etc/
+# Copy configuration
+COPY .backpack/docker/nginx/nginx-prod.tmpl.conf /etc/nginx/nginx.conf
+COPY .backpack/docker/supervisord/supervisord-prod.conf /etc/supervisord.conf
 
 # Copy application code
 COPY . /app
+
+# Entrypoint
+STOPSIGNAL SIGTERM
+ENTRYPOINT [".backpack/runtime/django-prod.sh"]

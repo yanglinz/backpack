@@ -9,7 +9,7 @@ RELEASE_TAG="$(. "$(dirname "$0")/hash-files.sh")"
 
 function build_release() {
   docker build \
-    -f .backpack/configs/docker/python-prod.Dockerfile \
+    -f .backpack/docker/python-prod.Dockerfile \
     --tag "$SOURCE_IMAGE" \
     .
 }
@@ -24,8 +24,10 @@ function publish_release() {
 
 build_release
 
-if [ "$GITHUB_REF" == "refs/heads/${RELEASE_BRANCH}" ]; then
-  publish_release
+if [ "$GITHUB_REF" != "refs/heads/${RELEASE_BRANCH}" ]; then
+  echo "Not on ${RELEASE_BRANCH} branch. Nothing to publish."
+elif [ "$RUNTIME_PLATFORM" == "HEROKU"]; then
+  echo "Not on GCP. Nothing to publish."
 else
-  echo "Not on ${RELEASE_BRANCH} branch. Nothing to build."
+  publish_release
 fi
