@@ -92,7 +92,7 @@ func getHerokuConfig(backpack internal.Context) autoconfig {
 func CreateConfig(backpack internal.Context) {
 	input := getCloudrunConfig(backpack)
 	if backpack.Runtime == symbols.RuntimeHeroku {
-		// input = getHerokuConfig(backpack)
+		input = getHerokuConfig(backpack)
 	}
 
 	hcl, err := hclencoder.Encode(input)
