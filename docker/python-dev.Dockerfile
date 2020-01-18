@@ -14,6 +14,7 @@ RUN /tmp/install-gcloud.sh
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
+  gettext-base \
   supervisor \
   nginx \
   git \

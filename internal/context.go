@@ -31,6 +31,8 @@ type contextYaml struct {
 type contextGoogle struct {
 	ProjectID     string
 	ProjectNumber string
+	Region        string
+	Zone          string
 }
 
 // Context for the overarching repository
@@ -85,6 +87,8 @@ func ParseContext(cmd *cobra.Command) Context {
 	google := contextGoogle{
 		ProjectID:     "default-263000",
 		ProjectNumber: "532331252493",
+		Region:        "us-central1",
+		Zone:          "us-central1-c",
 	}
 
 	context := Context{
