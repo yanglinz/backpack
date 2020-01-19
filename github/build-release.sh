@@ -39,8 +39,8 @@ function publish_deploy_heroku() {
   docker push "registry.heroku.com/${HEROKU_APP_NAME}/worker"
  
  # Release the build
-  heroku container:release web
-  heroku container:release worker
+  heroku container:release web -a "$HEROKU_APP_NAME"
+  heroku container:release worker -a "$HEROKU_APP_NAME"
 }
 
 debug_info
