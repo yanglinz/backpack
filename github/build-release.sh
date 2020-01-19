@@ -46,11 +46,11 @@ function publish_deploy_heroku() {
 debug_info
 build_release
 
-if [ "$GITHUB_REF" != "refs/heads/${RELEASE_BRANCH}" ]; then
+if [[ "$GITHUB_REF" != "refs/heads/${RELEASE_BRANCH}" ]]; then
   echo "Not on ${RELEASE_BRANCH} branch. Nothing to publish."
-elif [ "$RUNTIME_PLATFORM" == "CLOUD_RUN"]; then
+elif [[ "$RUNTIME_PLATFORM" == "CLOUD_RUN" ]]; then
   publish_gcp_registry
-elif [ "$RUNTIME_PLATFORM" == "HEROKU"]; then
+elif [[ "$RUNTIME_PLATFORM" == "HEROKU" ]]; then
   publish_deploy_heroku
 else
   echo "Not on GCP or Heroku. Nothing to publish."
