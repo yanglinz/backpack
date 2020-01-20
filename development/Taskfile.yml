@@ -9,4 +9,4 @@ tasks:
   ui:
     silent: true
     cmds:
-      - python3 -m http.server
+      - yarn start
