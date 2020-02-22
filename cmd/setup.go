@@ -32,7 +32,6 @@ var setupCmd = &cobra.Command{
 		if setupFiles {
 			development.SetupTaskfileBin(backpack)
 			development.SetupTaskfile(backpack)
-			development.CreateCertificates(backpack)
 			github.CreateWorkflows(backpack)
 			docker.CreateComposeConfig(backpack)
 			terraform.CreateConfig(backpack)
