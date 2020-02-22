@@ -8,6 +8,16 @@ env:
   GCP_PROJECT_ID: default-263000
 
 jobs:
+  # Build the cli and test project setup
+  backpack_build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.13.8
+      - uses: actions/checkout@v1
+      - run: .backpack/github/build-backpack.sh
+
   # Build and test frontend JS and CSS assets
   frontend_build:
     runs-on: ubuntu-latest

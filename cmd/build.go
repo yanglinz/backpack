@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/yanglinz/backpack/development"
 	"github.com/yanglinz/backpack/internal"
 )
 
@@ -12,6 +13,7 @@ var buildCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		backpack := internal.ParseContext(cmd)
 
+		development.CreateCertificates(backpack)
 		command := "docker-compose build"
 		shell := internal.GetCommand(command)
 		shell.Dir = backpack.Root
