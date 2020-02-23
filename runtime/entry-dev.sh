@@ -2,6 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# Load environment variables
 . "$(dirname "$0")/env-loader.sh"
 
 # Run django migrations

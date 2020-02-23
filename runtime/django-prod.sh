@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Manage static files
-python manage.py collectstatic
+python manage.py collectstatic --noinput
 
 # Run migration
 python manage.py migrate
