@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Manage static files
-pipenv run python manage.py collectstatic
+python manage.py collectstatic
 
 # Start production server
 uwsgi --ini /app/.backpack/docker/uwsgi/uwsgi.ini
