@@ -7,6 +7,7 @@ import (
 
 	"github.com/goccy/go-yaml"
 	"github.com/yanglinz/backpack/internal"
+	"github.com/yanglinz/backpack/symbols"
 )
 
 var composeHeader = `# @backpack
@@ -14,6 +15,10 @@ var composeHeader = `# @backpack
 # It is not meant to be hand-edited.
 
 `
+
+type composeConfigRequest struct {
+	target string
+}
 
 type composeBuild struct {
 	Context    string `yaml:"context"`
@@ -41,7 +46,7 @@ func getStartCommand(bashCommands []string) string {
 	return "bash -c \"" + strings.Join(bashCommands, " \\\n && ") + "\""
 }
 
-func getDependentServices(backpack internal.Context) map[string]interface{} {
+func getDependentServices(backpack internal.Context, req composeConfigRequest) map[string]interface{} {
 	services := make(map[string]interface{})
 
 	// Add postgres to services
@@ -70,13 +75,20 @@ func getDependentServices(backpack internal.Context) map[string]interface{} {
 	return services
 }
 
-func getServerService(backpack internal.Context, project internal.Project) (string, composeService) {
+func getServerService(backpack internal.Context, project internal.Project, req composeConfigRequest) (string, composeService) {
+	dockerfile := ".backpack/docker/python-dev.Dockerfile"
+	if req.target == symbols.EnvProduction {
+		dockerfile = ".backpack/docker/python-prod.Dockerfile"
+	}
 	build := composeBuild{
 		Context:    ".",
-		Dockerfile: ".backpack/docker/python-dev.Dockerfile",
+		Dockerfile: dockerfile,
 	}
 
 	startCommand := ".backpack/runtime/entry-dev.sh"
+	if req.target == symbols.EnvProduction {
+		startCommand = ".backpack/runtime/entry-prod.sh"
+	}
 	commands := []string{startCommand}
 	if backpack.Services.Postgres {
 		commands = []string{
@@ -102,6 +114,10 @@ func getServerService(backpack internal.Context, project internal.Project) (stri
 		// Distinguish whether they're running locally or in GCP
 		"BACKPACK_DOCKER_COMPOSE=true",
 	}
+	if req.target == symbols.EnvProduction {
+		// Set PORT so just like Heroku and Cloudrun environments
+		environment = append(environment, "PORT=8080")
+	}
 
 	dependsOn := []string{}
 	if backpack.Services.Postgres {
@@ -124,12 +140,12 @@ func getServerService(backpack internal.Context, project internal.Project) (stri
 	return serviceName, service
 }
 
-func getServerServices(backpack internal.Context) map[string]interface{} {
+func getServerServices(backpack internal.Context, req composeConfigRequest) map[string]interface{} {
 	services := make(map[string]interface{})
 
 	// Add server services
 	for _, p := range backpack.Projects {
-		serviceName, service := getServerService(backpack, p)
+		serviceName, service := getServerService(backpack, p, req)
 		services[serviceName] = service
 	}
 
@@ -137,17 +153,17 @@ func getServerServices(backpack internal.Context) map[string]interface{} {
 }
 
 // GetComposeConfig creates a yaml map of docker-compose.yml
-func GetComposeConfig(backpack internal.Context) ComposeConfig {
+func GetComposeConfig(backpack internal.Context, req composeConfigRequest) ComposeConfig {
 	services := make(map[string]interface{})
 
 	// Get dependent services
-	dependentServices := getDependentServices(backpack)
+	dependentServices := getDependentServices(backpack, req)
 	for k, v := range dependentServices {
 		services[k] = v
 	}
 
 	// Get server services
-	serverServices := getServerServices(backpack)
+	serverServices := getServerServices(backpack, req)
 	for k, v := range serverServices {
 		services[k] = v
 	}
@@ -162,12 +178,26 @@ func GetComposeConfig(backpack internal.Context) ComposeConfig {
 
 // CreateComposeConfig creates the project docker-compose.yml
 func CreateComposeConfig(backpack internal.Context) {
-	config := GetComposeConfig(backpack)
-	configYaml, _ := yaml.Marshal(config)
+	defaultConfig := GetComposeConfig(backpack, composeConfigRequest{
+		target: symbols.EnvDevelopment,
+	})
+	configYaml, _ := yaml.Marshal(defaultConfig)
 	content := strings.Join([]string{composeHeader, string(configYaml)}, "")
 
 	composePath := filepath.Join(backpack.Root, "docker-compose.yml")
 	err := ioutil.WriteFile(composePath, []byte(content), 0644)
+	if err != nil {
+		panic(err)
+	}
+
+	prodConfig := GetComposeConfig(backpack, composeConfigRequest{
+		target: symbols.EnvProduction,
+	})
+	configYaml, _ = yaml.Marshal(prodConfig)
+	content = strings.Join([]string{composeHeader, string(configYaml)}, "")
+
+	composePath = filepath.Join(backpack.Root, "docker-compose-prod.yml")
+	err = ioutil.WriteFile(composePath, []byte(content), 0644)
 	if err != nil {
 		panic(err)
 	}
