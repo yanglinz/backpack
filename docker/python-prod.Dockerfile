@@ -43,6 +43,6 @@ COPY .backpack/docker/supervisord/supervisord-prod.conf /etc/supervisord.conf
 # Copy application code
 COPY . /app
 
-# Entrypoint
+# Application startup
 STOPSIGNAL SIGTERM
-ENTRYPOINT [".backpack/runtime/django-prod.sh"]
+CMD [".backpack/runtime/django-prod.sh"]
