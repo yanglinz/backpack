@@ -76,7 +76,7 @@ func getServerService(backpack internal.Context, project internal.Project) (stri
 		Dockerfile: ".backpack/docker/python-dev.Dockerfile",
 	}
 
-	startCommand := ".backpack/runtime/django-dev.sh"
+	startCommand := ".backpack/runtime/entry-dev.sh"
 	commands := []string{startCommand}
 	if backpack.Services.Postgres {
 		commands = []string{

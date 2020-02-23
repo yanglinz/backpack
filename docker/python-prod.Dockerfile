@@ -45,4 +45,4 @@ COPY . /app
 
 # Application startup
 STOPSIGNAL SIGTERM
-CMD [".backpack/runtime/django-prod.sh"]
+CMD [".backpack/runtime/entry-prod.sh"]
