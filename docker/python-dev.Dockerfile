@@ -31,11 +31,19 @@ RUN mkdir /app && mkdir /home/app
 WORKDIR /app
 ENV HOME /home/app
 
+# Install custom dependencies
+COPY scripts/docker /app/scripts/docker
+COPY .backpack/docker/scripts/install-extra-deps.sh /tmp/
+RUN /tmp/install-extra-deps.sh
+
 # Install application dependencies
 RUN pip install --no-cache-dir --trusted-host pypi.python.org pipenv
 COPY Pipfile /app/
 COPY Pipfile.lock /app/
 RUN pipenv install --dev
+
+# TODO: create hooks for installing extra deps
+RUN pipenv run pyppeteer-install
 
 # Copy configurations
 COPY .backpack/docker/watchman/watchman.json /etc/

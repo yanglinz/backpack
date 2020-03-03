@@ -2,12 +2,13 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-. "$(dirname "$0")/berglas-loader.sh"
+# Manage static files
+python manage.py collectstatic --noinput
+[ -d "./build" ] && cp -r ./build/. ./www
+rm -f ./www/index.html  # Disallow index.html in static files
 
-# Generate nginx conf
-# https://unix.stackexchange.com/questions/294378/replacing-only-specific-variables-with-envsubst/294400
-envsubst '${PORT}' < /app/.backpack/docker/nginx/nginx-prod.tmpl.conf > /etc/nginx/nginx.conf
+# Run migration
+python manage.py migrate
 
 # Start production server
-mkdir -p /app/var
-/usr/bin/supervisord
+uwsgi --ini /app/.backpack/docker/uwsgi/uwsgi.ini

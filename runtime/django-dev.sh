@@ -2,8 +2,5 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-. "$(dirname "$0")/env-loader.sh"
-
-# Configure nginx and start the development server
-cp .backpack/docker/nginx/nginx-dev.conf /etc/nginx/nginx.conf
-/usr/bin/supervisord
+# Start the development server
+pipenv run python manage.py runserver 0.0.0.0:4567

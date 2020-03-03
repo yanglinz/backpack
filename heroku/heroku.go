@@ -15,7 +15,11 @@ type PutSecretRequest struct {
 
 // PutSecret creates/updates a secret with its value
 func PutSecret(req PutSecretRequest) {
-	parts := []string{"heroku --version"}
+	parts := []string{
+		"heroku config:set",
+		req.Name + "=" + req.Value,
+		"-a", req.App,
+	}
 	command := strings.Join(parts, " ")
 	shell := internal.GetCommand(command)
 	err := shell.Run()

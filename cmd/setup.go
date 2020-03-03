@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/yanglinz/backpack/development"
 	"github.com/yanglinz/backpack/docker"
+	"github.com/yanglinz/backpack/github"
 	"github.com/yanglinz/backpack/google"
 	"github.com/yanglinz/backpack/internal"
 	"github.com/yanglinz/backpack/terraform"
@@ -31,7 +32,7 @@ var setupCmd = &cobra.Command{
 		if setupFiles {
 			development.SetupTaskfileBin(backpack)
 			development.SetupTaskfile(backpack)
-			development.CreateCertificates(backpack)
+			github.CreateWorkflows(backpack)
 			docker.CreateComposeConfig(backpack)
 			terraform.CreateConfig(backpack)
 		}
