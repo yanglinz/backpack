@@ -52,7 +52,7 @@ func getCloudrunConfig(backpack internal.Context) autoconfig {
 		variable{
 			ID:      "context_name",
 			Type:    "string",
-			Default: "automata",
+			Default: backpack.Name,
 		},
 		variable{
 			ID:      "image_tag",

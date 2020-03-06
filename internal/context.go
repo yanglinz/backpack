@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/goccy/go-yaml"
+	"github.com/iancoleman/strcase"
 	"github.com/spf13/cobra"
 )
 
@@ -35,6 +36,10 @@ type contextGoogle struct {
 	Zone          string
 }
 
+type contextHeroku struct {
+	AppName string
+}
+
 // Context for the overarching repository
 type Context struct {
 	Root     string
@@ -43,6 +48,7 @@ type Context struct {
 	Projects []Project
 	Services Services
 	Google   contextGoogle
+	Heroku   contextHeroku
 }
 
 func parseRootPath(cmd *cobra.Command) (string, error) {
@@ -91,6 +97,10 @@ func ParseContext(cmd *cobra.Command) Context {
 		Zone:          "us-central1-c",
 	}
 
+	heroku := contextHeroku{
+		AppName: strcase.ToKebab(parsedContext.Name + "-backpack"),
+	}
+
 	context := Context{
 		Root:     rootPath,
 		Name:     parsedContext.Name,
@@ -98,6 +108,7 @@ func ParseContext(cmd *cobra.Command) Context {
 		Projects: parsedContext.Projects,
 		Services: parsedContext.Services,
 		Google:   google,
+		Heroku:   heroku,
 	}
 	return context
 }
