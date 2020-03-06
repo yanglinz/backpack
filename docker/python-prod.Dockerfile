@@ -21,17 +21,17 @@ RUN mkdir /app && mkdir /home/app
 WORKDIR /app
 ENV HOME /home/app
 
-# Install custom dependencies
-COPY scripts/docker /app/scripts/docker
-COPY .backpack/docker/scripts/install-extra-deps.sh /tmp/
-RUN /tmp/install-extra-deps.sh
-
 # Install application dependencies
 RUN pip install --no-cache-dir --trusted-host pypi.python.org pipenv
 COPY Pipfile /app/
 COPY Pipfile.lock /app/
 RUN pipenv install --system --deploy
 RUN pip install uwsgi==2.0.18
+
+# Install custom dependencies
+COPY scripts/docker /app/scripts/docker
+COPY .backpack/docker/scripts/install-extra-deps.sh /tmp/
+RUN /tmp/install-extra-deps.sh
 
 # Copy configuration
 COPY .backpack/docker/nginx/nginx-prod.tmpl.conf /etc/nginx/nginx.conf
