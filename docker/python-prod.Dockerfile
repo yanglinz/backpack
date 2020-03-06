@@ -33,9 +33,6 @@ COPY Pipfile.lock /app/
 RUN pipenv install --system --deploy
 RUN pip install uwsgi==2.0.18
 
-# TODO: create hooks for installing extra deps
-RUN pipenv run pyppeteer-install
-
 # Copy configuration
 COPY .backpack/docker/nginx/nginx-prod.tmpl.conf /etc/nginx/nginx.conf
 COPY .backpack/docker/supervisord/supervisord-prod.conf /etc/supervisord.conf
