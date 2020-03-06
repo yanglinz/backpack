@@ -3,9 +3,9 @@ name: Main
 on: [push]
 
 env:
-  APP_NAME: automata
-  RUNTIME_PLATFORM: HEROKU
-  GCP_PROJECT_ID: default-263000
+  APP_NAME: ${{APP_NAME}}
+  RUNTIME_PLATFORM: ${{RUNTIME_PLATFORM}}
+  GCP_PROJECT_ID: ${{GCP_PROJECT_ID}}
 
 jobs:
   # Build the cli and test project setup

@@ -81,7 +81,7 @@ var varsPutCmd = &cobra.Command{
 		if backpack.Runtime == symbols.RuntimeHeroku {
 			for k, v := range envJSON {
 				heroku.PutSecret(heroku.PutSecretRequest{
-					App:   "automata-backpack",
+					App:   backpack.Heroku.AppName,
 					Name:  k,
 					Value: v,
 				})
