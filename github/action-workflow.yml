@@ -11,6 +11,7 @@ jobs:
   # Build the cli and test project setup
   backpack_build:
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - uses: actions/setup-go@v1
         with:
@@ -21,6 +22,7 @@ jobs:
   # Build and test frontend JS and CSS assets
   frontend_build:
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - uses: actions/checkout@v1
       - id: yarn-cache
@@ -41,12 +43,14 @@ jobs:
   # Build and test backend python
   server_build:
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - uses: actions/checkout@v1
 
   # Build and publish docker artifact
   release_build:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/disabled'
     needs: frontend_build
     steps:
       - uses: actions/checkout@v1
@@ -61,36 +65,3 @@ jobs:
       - run: .backpack/github/build-release.sh
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-
-  # Run terraform plan
-  terraform_plan:
-    runs-on: ubuntu-latest
-    if: github.ref != 'refs/heads/master'
-    steps:
-      - uses: actions/checkout@v1
-      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-        with:
-          version: "270.0.0"
-          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-      - run: .backpack/github/install-terraform.sh
-      - run: .backpack/github/terraform-plan.sh
-        env:
-          TERRAFORM_CLOUD_TOKEN: ${{ secrets.TERRAFORM_CLOUD_TOKEN }}
-          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-
-  # Run terraform apply
-  terraform_apply:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    needs: release_build
-    steps:
-      - uses: actions/checkout@v1
-      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-        with:
-          version: "270.0.0"
-          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-      - run: .backpack/github/install-terraform.sh
-      - run: .backpack/github/terraform-apply.sh
-        env:
-          TERRAFORM_CLOUD_TOKEN: ${{ secrets.TERRAFORM_CLOUD_TOKEN }}
-          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}

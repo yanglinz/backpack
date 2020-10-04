@@ -1,0 +1,9 @@
+- name: DigitalOcean Bootstrapper
+  hosts: all
+  tasks:
+    - name: Run Dokku Setup
+      script: "{{ playbook_dir }}/../dokku-installer.sh"
+    - name: Debug Dokku Version
+      command: dokku version
+    - name: Setup Dokku SSH Keys
+      script: "{{ playbook_dir }}/../dokku-manage-keys.sh"
