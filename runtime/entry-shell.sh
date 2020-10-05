@@ -6,4 +6,4 @@ IFS=$'\n\t'
 . "$(dirname "$0")/env-loader.sh"
 
 # Start a pipenv shell
-pipenv shell
+poetry shell
