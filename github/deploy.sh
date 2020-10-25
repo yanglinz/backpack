@@ -17,6 +17,6 @@ ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
 sudo chmod 600 ~/.ssh/id_rsa.pub
 
 # Setup git remote and push remote
-echo "Adding remote - dokku@${instance_ip}:${APP_NAME}"
-git remote add dokku "dokku@${instance_ip}:${APP_NAME}"
+echo "Adding remote - ssh://dokku@${instance_ip}:${APP_NAME}"
+git remote add dokku "ssh://dokku@${instance_ip}:${APP_NAME}"
 GIT_SSH_COMMAND="ssh -l dokku" git push dokku "$local_branch":master -f --verbose
