@@ -6,7 +6,7 @@
         src: "{{ playbook_dir }}/../../.."
         dest: /opt/backpack-app
         recursive: yes
-    - name: Copy Application Directory
+    - name: Copy Application Artifact
       copy:
         src: "{{ playbook_dir }}/../../../app-artifact.tar.gz"
         dest: /tmp/app-artifact.tar.gz
