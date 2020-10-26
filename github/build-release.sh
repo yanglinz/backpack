@@ -43,6 +43,16 @@ function publish_deploy_heroku() {
   heroku container:release worker -a "$HEROKU_APP_NAME"
 }
 
+function generate_vm_artifact() {
+  # Create env vars
+  mkdir -p var/env
+  ./backpack vars get --env=production > /dev/null 2>&1
+  ./backpack vars get --env=production > var/env/production.json
+
+  # Create tarball
+  tar -zcvf app-artifact.tar.gz $(cwd)
+}
+
 debug_info
 
 if [[ "$GITHUB_REF" != "refs/heads/${RELEASE_BRANCH}" ]]; then
@@ -53,6 +63,8 @@ elif [[ "$RUNTIME_PLATFORM" == "CLOUD_RUN" ]]; then
 elif [[ "$RUNTIME_PLATFORM" == "HEROKU" ]]; then
   build_release
   publish_deploy_heroku
+elif [[ "$RUNTIME_PLATFORM" == "VM" ]]; then
+  generate_vm_artifact
 else
   echo "Not on GCP or Heroku. Nothing to publish."
 fi
