@@ -26,4 +26,4 @@ set_vars
 deploy
 
 dokku config:set "$APP_NAME" TIMESTAMP=$(date +%s)
-dokku domains:enable backpack-example
+dokku domains:enable "$APP_NAME"
