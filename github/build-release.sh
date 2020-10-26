@@ -50,7 +50,7 @@ function generate_vm_artifact() {
   ./backpack vars get --env=production > var/env/production.json
 
   # Create tarball
-  tar -zcvf app-artifact.tar.gz $(pwd)
+  tar -czf app-artifact.tar.gz .
 }
 
 debug_info
