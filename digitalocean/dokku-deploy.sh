@@ -2,9 +2,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-function set_buildpack() {
-}
-
 function set_vars() {
   local ENV_SOURCE="/opt/backpack-app/var/env/production.json"
 
@@ -26,6 +23,5 @@ function deploy() {
   dokku domains:enable "$APP_NAME"
 }
 
-set_buildpack
 set_vars
 deploy

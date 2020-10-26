@@ -46,6 +46,7 @@ function publish_deploy_heroku() {
 function generate_vm_artifact() {
   # Create env vars
   mkdir -p var/env
+  ./backpack vars get --env=production
   ./backpack vars get --env=production > /dev/null 2>&1
   ./backpack vars get --env=production > var/env/production.json
 

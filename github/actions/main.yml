@@ -62,6 +62,7 @@ jobs:
           version: "270.0.0"
           service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
       - uses: ./.backpack/github/actions/set-env
+      - run: .backpack/github/install-berglas.sh
       - run: .backpack/github/build-release.sh
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
