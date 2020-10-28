@@ -59,8 +59,9 @@ jobs:
           path: build
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          version: "270.0.0"
+          version: "290.0.1"
           service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          export_default_credentials: true
       - uses: ./.backpack/github/actions/set-env
       - run: .backpack/github/install-berglas.sh
       - run: .backpack/github/build-release.sh
